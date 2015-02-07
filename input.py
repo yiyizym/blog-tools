@@ -60,10 +60,11 @@ class FormatObj(object):
 
 class WritFile(object):
     """docstring for WritFile"""
-    def __init__(self, outputFile, formatted):
+    def __init__(self, outputFile, insertPosition, formatted):
         super(WritFile, self).__init__()
         self.formatted = formatted
         self.outputFile = outputFile
+        self.insertPosition = insertPosition
 
     def write(self):
         try:
@@ -72,7 +73,7 @@ class WritFile(object):
             print '\nnot such file.\n'
         lines = r.readlines()
         r.close()
-        lines = lines[:1] + self.formatted + lines[1:]
+        lines = lines[:self.insertPosition] + self.formatted + lines[self.insertPosition:]
         try:
             w = open(self.outputFile,'w')
         except:
@@ -100,10 +101,11 @@ class CleanIncome(object):
 
 class Config(object):
     """docstring for Config"""
-    def __init__(self, income, outcome):
+    def __init__(self, income, outcome, insertPosition):
         super(Config, self).__init__()
         self.income = income
         self.outcome = outcome
+        self.insertPosition = insertPosition
 
     def getIncomeFile(self):
         return self.income
@@ -111,16 +113,19 @@ class Config(object):
     def getOutcomeFile(self):
         return self.outcome
 
+    def getInsertPosition(self):
+        return self.insertPosition
+
         
 if __name__ == '__main__':
 
-    config = Config('income.md','outcome.md')
+    config = Config('income.md','../_posts/20150201-DDR.md', 7)
 
     r = ReadFile(config.getIncomeFile())
     raw = r.getReadFile()
     f = FormatObj(raw)
     formatted = f.getFormatted()
-    w = WritFile(config.getOutcomeFile(),formatted)
+    w = WritFile(config.getOutcomeFile(),config.getInsertPosition(),formatted)
     w.write()
     c = CleanIncome(config.getIncomeFile())
     c.clean()
